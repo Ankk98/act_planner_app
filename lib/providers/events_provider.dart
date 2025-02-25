@@ -25,6 +25,13 @@ class EventsProvider with ChangeNotifier {
     return filteredEvents;
   }
 
+  Event getEvent(String id) {
+    return _events.firstWhere(
+      (event) => event.id == id,
+      orElse: () => throw Exception('Event not found'),
+    );
+  }
+
   Future<void> loadEvents() async {
     final box = Hive.box<Event>('events');
     _events = box.values.toList();

@@ -6,7 +6,7 @@ import '../providers/events_provider.dart';
 class EventFormScreen extends StatefulWidget {
   final Event? event;
 
-  EventFormScreen({this.event});
+  const EventFormScreen({super.key, this.event});
 
   @override
   _EventFormScreenState createState() => _EventFormScreenState();

@@ -1,7 +1,7 @@
 import 'package:hive/hive.dart';
 import 'asset.dart';
 
-part 'act.g.dart'; // Generated file
+part 'act.g.dart';
 
 @HiveType(typeId: 3)
 class Act {

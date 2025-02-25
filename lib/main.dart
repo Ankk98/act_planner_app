@@ -8,7 +8,9 @@ import 'models/asset.dart';
 import 'services/dummy_data_service.dart';
 import 'providers/events_provider.dart';
 import 'screens/event_list_screen.dart';
+import 'providers/contacts_provider.dart';
 import 'adapters/duration_adapter.dart';
+import 'providers/acts_provider.dart'; // Import ActsProvider
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -26,6 +28,13 @@ void main() async {
   Hive.registerAdapter(RoleAdapter());
   Hive.registerAdapter(AssetTypeAdapter());
 
+  // Delete existing boxes to ensure clean state
+  await Hive.deleteBoxFromDisk('events');
+  await Hive.deleteBoxFromDisk('acts');
+  await Hive.deleteBoxFromDisk('contacts');
+  await Hive.deleteBoxFromDisk('assets');
+  await Hive.deleteBoxFromDisk('settings');
+
   // Open Hive boxes
   await Hive.openBox<Event>('events');
   await Hive.openBox<Act>('acts');
@@ -36,14 +45,26 @@ void main() async {
   await DummyDataService.seedData();
 
   runApp(
-    ChangeNotifierProvider(
-      create: (_) => EventsProvider()..loadEvents(),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (_) => EventsProvider()..loadEvents(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => ContactsProvider()..loadContacts(),
+        ),
+        ChangeNotifierProvider( // Add ActsProvider
+          create: (_) => ActsProvider()..loadActs(),
+        ),
+      ],
       child: MyApp(),
     ),
   );
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -57,6 +78,8 @@ class MyApp extends StatelessWidget {
 }
 
 class HomeScreen extends StatelessWidget {
+  const HomeScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
