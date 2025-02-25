@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../models/contact.dart';
 import '../providers/contacts_provider.dart';
 import 'contact_form_screen.dart';
 

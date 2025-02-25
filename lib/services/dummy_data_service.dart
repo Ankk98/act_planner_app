@@ -32,17 +32,19 @@ class DummyDataService {
   static final List<Asset> assets = [
     Asset(
       id: 'a1',
-      type: AssetType.Song,
-      downloadUrl: 'assets/songs/wedding_dance.mp3',
-      localPath: 'assets/songs/wedding_dance.mp3',
-      actId: 'act1',
+      name: 'Background Music 1',
+      path: 'assets/audio/background1.mp3',
+      type: AssetType.Audio,
+      description: 'Calm background music',
+      uploadedAt: DateTime.now(),
     ),
     Asset(
       id: 'a2',
-      type: AssetType.Poster,
-      downloadUrl: 'assets/images/annual_day_poster.jpg',
-      localPath: 'assets/images/annual_day_poster.jpg',
-      actId: 'act4',
+      name: 'Event Poster',
+      path: 'assets/images/poster.jpg',
+      type: AssetType.Image,
+      description: 'Main event poster',
+      uploadedAt: DateTime.now(),
     ),
     // ...more assets
   ];
@@ -153,6 +155,34 @@ class DummyDataService {
     ),
   ];
 
+  static Future<void> seedAssets() async {
+    final box = Hive.box<Asset>('assets');
+    
+    final dummyAssets = [
+      Asset(
+        id: 'a1',
+        name: 'Background Music 1',
+        path: 'assets/audio/background1.mp3',
+        type: AssetType.Audio,
+        description: 'Calm background music',
+        uploadedAt: DateTime.now(),
+      ),
+      Asset(
+        id: 'a2',
+        name: 'Event Poster',
+        path: 'assets/images/poster.jpg',
+        type: AssetType.Image,
+        description: 'Main event poster',
+        uploadedAt: DateTime.now(),
+      ),
+      // Add more dummy assets as needed
+    ];
+
+    for (var asset in dummyAssets) {
+      await box.put(asset.id, asset);
+    }
+  }
+
   static Future<void> seedData() async {
     final settings = await Hive.openBox('settings');
     final isFirstRun = settings.get('isFirstRun', defaultValue: true);
@@ -170,5 +200,6 @@ class DummyDataService {
 
       await settings.put('isFirstRun', false);
     }
+    await seedAssets();
   }
 }

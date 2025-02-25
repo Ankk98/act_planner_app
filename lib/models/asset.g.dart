@@ -18,27 +18,30 @@ class AssetAdapter extends TypeAdapter<Asset> {
     };
     return Asset(
       id: fields[0] as String,
-      type: fields[1] as AssetType,
-      downloadUrl: fields[2] as String,
-      localPath: fields[3] as String?,
-      actId: fields[4] as String,
+      name: fields[1] as String,
+      path: fields[2] as String,
+      type: fields[3] as AssetType,
+      description: fields[4] as String?,
+      uploadedAt: fields[5] as DateTime,
     );
   }
 
   @override
   void write(BinaryWriter writer, Asset obj) {
     writer
-      ..writeByte(5)
+      ..writeByte(6)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
-      ..write(obj.type)
+      ..write(obj.name)
       ..writeByte(2)
-      ..write(obj.downloadUrl)
+      ..write(obj.path)
       ..writeByte(3)
-      ..write(obj.localPath)
+      ..write(obj.type)
       ..writeByte(4)
-      ..write(obj.actId);
+      ..write(obj.description)
+      ..writeByte(5)
+      ..write(obj.uploadedAt);
   }
 
   @override
@@ -60,27 +63,32 @@ class AssetTypeAdapter extends TypeAdapter<AssetType> {
   AssetType read(BinaryReader reader) {
     switch (reader.readByte()) {
       case 0:
-        return AssetType.Song;
+        return AssetType.Audio;
       case 1:
-        return AssetType.Poster;
+        return AssetType.Image;
       case 2:
-        return AssetType.Prop;
+        return AssetType.Video;
+      case 3:
+        return AssetType.Document;
       default:
-        return AssetType.Song;
+        return AssetType.Audio;
     }
   }
 
   @override
   void write(BinaryWriter writer, AssetType obj) {
     switch (obj) {
-      case AssetType.Song:
+      case AssetType.Audio:
         writer.writeByte(0);
         break;
-      case AssetType.Poster:
+      case AssetType.Image:
         writer.writeByte(1);
         break;
-      case AssetType.Prop:
+      case AssetType.Video:
         writer.writeByte(2);
+        break;
+      case AssetType.Document:
+        writer.writeByte(3);
         break;
     }
   }

@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../models/act.dart';
 import '../providers/acts_provider.dart';
 import 'act_form_screen.dart';
 
 class ActListScreen extends StatefulWidget {
   final String eventId;
 
-  const ActListScreen({required this.eventId, Key? key}) : super(key: key);
+  const ActListScreen({required this.eventId, super.key});
 
   @override
   _ActListScreenState createState() => _ActListScreenState();

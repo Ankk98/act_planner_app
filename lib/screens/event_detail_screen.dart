@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../models/act.dart';
 import '../providers/acts_provider.dart';
 import 'act_form_screen.dart';
 
 class EventDetailScreen extends StatelessWidget {
   final String eventId;
 
-  const EventDetailScreen({required this.eventId, Key? key}) : super(key: key);
+  const EventDetailScreen({required this.eventId, super.key});
 
   @override
   Widget build(BuildContext context) {
