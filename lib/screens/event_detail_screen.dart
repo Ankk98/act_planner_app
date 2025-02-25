@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/acts_provider.dart';
 import 'act_form_screen.dart';
+import 'package:act_planner_app/screens/timeline_screen.dart';
 
 class EventDetailScreen extends StatelessWidget {
   final String eventId;
+  final String eventName;
 
-  const EventDetailScreen({required this.eventId, super.key});
+  const EventDetailScreen({Key? key, required this.eventId, required this.eventName}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -17,47 +19,26 @@ class EventDetailScreen extends StatelessWidget {
 
         return Scaffold(
           appBar: AppBar(
-            title: Text('Event Details'),
+            title: Text(eventName),
           ),
-          body: ReorderableListView.builder(
-            itemCount: acts.length,
-            onReorder: (oldIndex, newIndex) {
-              Provider.of<ActsProvider>(context, listen: false)
-                  .reorderAct(oldIndex, newIndex);
-            },
-            itemBuilder: (context, index) {
-              final act = acts[index];
-              return Card(
-                key: ValueKey('act_${act.id}_$index'), // Unique key for each act
-                child: ListTile(
-                  title: Text(act.name),
-                  subtitle: Text('Sequence: ${act.sequenceId}'),
-                  trailing: IconButton(
-                    icon: Icon(Icons.edit),
-                    onPressed: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => ActFormScreen(
-                            eventId: eventId,
-                            act: act,
-                          ),
-                        ),
-                      );
-                    },
-                  ),
+          body: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text('Details for event: $eventName (ID: $eventId)'),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => TimelineScreen(eventId: eventId),
+                      ),
+                    );
+                  },
+                  child: const Text('View Timeline'),
                 ),
-              );
-            },
-          ),
-          floatingActionButton: FloatingActionButton(
-            onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => ActFormScreen(eventId: eventId),
-                ),
-              );
-            },
-            child: Icon(Icons.add),
+              ],
+            ),
           ),
         );
       },

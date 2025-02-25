@@ -11,6 +11,7 @@ import 'screens/event_list_screen.dart';
 import 'providers/contacts_provider.dart';
 import 'adapters/duration_adapter.dart';
 import 'providers/acts_provider.dart'; // Import ActsProvider
+import 'screens/timeline_screen.dart'; // Import TimelineScreen
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
