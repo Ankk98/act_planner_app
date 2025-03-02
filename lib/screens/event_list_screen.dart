@@ -7,15 +7,19 @@ import 'event_form_screen.dart';
 import 'contact_list_screen.dart';
 import 'act_list_screen.dart'; // Import ActListScreen
 import 'event_detail_screen.dart';
+import '../providers/filter_provider.dart';
 
 class EventListScreen extends StatelessWidget {
   const EventListScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    // Access the filter provider
+    final filterProvider = Provider.of<FilterProvider>(context);
+
     return Scaffold(
       appBar: AppBar(
-        title: Text('Events'),
+        title: Text('Events - ${filterProvider.filterName}'),
         actions: [
           IconButton(
             icon: Icon(Icons.add),
@@ -29,14 +33,14 @@ class EventListScreen extends StatelessWidget {
       ),
       body: Column(
         children: [
-          _buildSearchAndFilter(),
+          _buildSearchAndFilter(context, filterProvider),
           Expanded(child: _buildEventList()),
         ],
       ),
     );
   }
 
-  Widget _buildSearchAndFilter() {
+  Widget _buildSearchAndFilter(BuildContext context, FilterProvider filterProvider) {
     return Consumer<EventsProvider>(
       builder: (context, eventsProvider, _) => Padding(
         padding: const EdgeInsets.all(8.0),
@@ -53,7 +57,7 @@ class EventListScreen extends StatelessWidget {
             ),
             SizedBox(width: 8),
             DropdownButton<EventType?>(
-              value: null,
+              value: filterProvider.filterName == 'ALL' ? null : EventType.values.firstWhere((type) => type.toString().split('.').last == filterProvider.filterName),
               hint: Text('Filter'),
               items: [
                 DropdownMenuItem<EventType?>(
@@ -65,7 +69,10 @@ class EventListScreen extends StatelessWidget {
                   child: Text(type.toString().split('.').last),
                 )),
               ],
-              onChanged: eventsProvider.setFilterType,
+              onChanged: (EventType? selectedType) {
+                eventsProvider.setFilterType(selectedType);
+                filterProvider.setFilter(selectedType?.toString().split('.').last ?? 'ALL');
+              },
             ),
           ],
         ),

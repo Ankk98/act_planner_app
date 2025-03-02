@@ -12,6 +12,7 @@ import 'screens/event_list_screen.dart';
 import 'providers/contacts_provider.dart';
 import 'adapters/duration_adapter.dart';
 import 'providers/acts_provider.dart'; // Import ActsProvider
+import 'providers/filter_provider.dart';
 // Import TimelineScreen
 
 void main() async {
@@ -51,6 +52,7 @@ void main() async {
   final contactsProvider = ContactsProvider();
   final actsProvider = ActsProvider();
   final assetsProvider = AssetsProvider();
+  final filterProvider = FilterProvider();
 
   // Load initial data
   await eventsProvider.loadEvents();
@@ -65,6 +67,7 @@ void main() async {
         ChangeNotifierProvider.value(value: contactsProvider),
         ChangeNotifierProvider.value(value: actsProvider),
         ChangeNotifierProvider.value(value: assetsProvider),
+        ChangeNotifierProvider.value(value: filterProvider),
       ],
       child: const MyApp(),
     ),
