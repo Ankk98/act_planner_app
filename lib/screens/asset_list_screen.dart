@@ -2,73 +2,122 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/asset.dart';
 import '../providers/assets_provider.dart';
-import 'asset_player_screen.dart';
+import '../services/asset_service.dart';
 
-class AssetListScreen extends StatelessWidget {
-  const AssetListScreen({super.key});
+class AssetListScreen extends StatefulWidget {
+  final String? eventId;
+  final String? actId;
+
+  const AssetListScreen({
+    super.key,
+    this.eventId,
+    this.actId,
+  });
 
   @override
-  Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: AssetType.values.length,
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text('Assets'),
-          bottom: TabBar(
-            tabs: AssetType.values.map((type) => Tab(
-              text: type.toString().split('.').last,
-            )).toList(),
-          ),
-        ),
-        body: TabBarView(
-          children: AssetType.values.map((type) => _AssetTypeList(type)).toList(),
-        ),
-      ),
-    );
-  }
+  State<AssetListScreen> createState() => _AssetListScreenState();
 }
 
-class _AssetTypeList extends StatelessWidget {
-  final AssetType assetType;
-
-  const _AssetTypeList(this.assetType);
+class _AssetListScreenState extends State<AssetListScreen> {
+  late AssetService _assetService;
 
   @override
-  Widget build(BuildContext context) {
-    return Consumer<AssetsProvider>(
-      builder: (ctx, provider, _) {
-        final assets = provider.getAssetsByType(assetType);
-        return ListView.builder(
-          itemCount: assets.length,
-          itemBuilder: (ctx, i) => ListTile(
-            leading: Icon(_getIconForType(assetType)),
-            title: Text(assets[i].name),
-            subtitle: Text(assets[i].description ?? ''),
-            onTap: () {
-              if (assetType == AssetType.Audio) {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (ctx) => AssetPlayerScreen(asset: assets[i]),
-                  ),
-                );
-              }
-            },
-          ),
-        );
-      },
+  void initState() {
+    super.initState();
+    _assetService = AssetService(
+      assetsProvider: Provider.of<AssetsProvider>(context, listen: false),
     );
   }
 
-  IconData _getIconForType(AssetType type) {
+  Widget _buildAssetIcon(AssetType type) {
+    IconData iconData;
     switch (type) {
       case AssetType.Audio:
-        return Icons.audio_file;
+        iconData = Icons.audio_file;
+        break;
       case AssetType.Image:
-        return Icons.image;
+        iconData = Icons.image;
+        break;
       case AssetType.Video:
-        return Icons.video_file;
+        iconData = Icons.video_file;
+        break;
       case AssetType.Document:
-        return Icons.description;
+        iconData = Icons.description;
+        break;
+      case AssetType.Other:
+        iconData = Icons.insert_drive_file;
+        break;
     }
+    return Icon(iconData);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Assets'),
+      ),
+      body: Consumer<AssetsProvider>(
+        builder: (context, assetsProvider, child) {
+          final assets = assetsProvider.assets.where((asset) {
+            if (widget.actId != null) {
+              return asset.actId == widget.actId;
+            }
+            if (widget.eventId != null) {
+              return asset.eventId == widget.eventId;
+            }
+            return true;
+          }).toList();
+
+          if (assets.isEmpty) {
+            return const Center(
+              child: Text('No assets found'),
+            );
+          }
+
+          return ListView.builder(
+            itemCount: assets.length,
+            itemBuilder: (context, index) {
+              final asset = assets[index];
+              return ListTile(
+                leading: _buildAssetIcon(asset.type),
+                title: Text(asset.name),
+                subtitle: Text(
+                  'Uploaded: ${asset.uploadedAt.toString().split('.')[0]}',
+                ),
+                trailing: IconButton(
+                  icon: const Icon(Icons.delete),
+                  onPressed: () async {
+                    final confirmed = await showDialog<bool>(
+                      context: context,
+                      builder: (ctx) => AlertDialog(
+                        title: const Text('Delete Asset'),
+                        content: const Text(
+                          'Are you sure you want to delete this asset?',
+                        ),
+                        actions: [
+                          TextButton(
+                            child: const Text('Cancel'),
+                            onPressed: () => Navigator.pop(ctx, false),
+                          ),
+                          TextButton(
+                            child: const Text('Delete'),
+                            onPressed: () => Navigator.pop(ctx, true),
+                          ),
+                        ],
+                      ),
+                    );
+
+                    if (confirmed == true) {
+                      await assetsProvider.deleteAsset(asset.id);
+                    }
+                  },
+                ),
+              );
+            },
+          );
+        },
+      ),
+    );
   }
 }

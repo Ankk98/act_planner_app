@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import 'package:uuid/uuid.dart';
 import '../models/event.dart';
 import '../models/act.dart';
 import '../models/contact.dart';
@@ -33,17 +34,15 @@ class DummyDataService {
     Asset(
       id: 'a1',
       name: 'Background Music 1',
-      path: 'assets/audio/background1.mp3',
+      relativePath: 'assets/audio/background1.mp3',
       type: AssetType.Audio,
-      description: 'Calm background music',
       uploadedAt: DateTime.now(),
     ),
     Asset(
       id: 'a2',
       name: 'Event Poster',
-      path: 'assets/images/poster.jpg',
+      relativePath: 'assets/images/poster.jpg',
       type: AssetType.Image,
-      description: 'Main event poster',
       uploadedAt: DateTime.now(),
     ),
     // ...more assets
@@ -155,34 +154,6 @@ class DummyDataService {
     ),
   ];
 
-  static Future<void> seedAssets() async {
-    final box = Hive.box<Asset>('assets');
-    
-    final dummyAssets = [
-      Asset(
-        id: 'a1',
-        name: 'Background Music 1',
-        path: 'assets/audio/background1.mp3',
-        type: AssetType.Audio,
-        description: 'Calm background music',
-        uploadedAt: DateTime.now(),
-      ),
-      Asset(
-        id: 'a2',
-        name: 'Event Poster',
-        path: 'assets/images/poster.jpg',
-        type: AssetType.Image,
-        description: 'Main event poster',
-        uploadedAt: DateTime.now(),
-      ),
-      // Add more dummy assets as needed
-    ];
-
-    for (var asset in dummyAssets) {
-      await box.put(asset.id, asset);
-    }
-  }
-
   static Future<void> seedData() async {
     final settings = await Hive.openBox('settings');
     final isFirstRun = settings.get('isFirstRun', defaultValue: true);
@@ -193,13 +164,14 @@ class DummyDataService {
       final contactsBox = Hive.box<Contact>('contacts');
       final assetsBox = Hive.box<Asset>('assets');
 
+      // Add sample assets to Hive
+      await assetsBox.putAll({assets[0].id: assets[0], assets[1].id: assets[1]});
+
       await eventsBox.addAll(events);
       await actsBox.addAll(acts);
       await contactsBox.addAll(contacts);
-      await assetsBox.addAll(assets);
 
       await settings.put('isFirstRun', false);
     }
-    await seedAssets();
   }
 }

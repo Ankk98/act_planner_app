@@ -21,17 +21,17 @@ class ContactAdapter extends TypeAdapter<Contact> {
       eventId: fields[1] as String,
       userId: fields[2] as String,
       role: fields[3] as Role,
+      additionalInfo: fields[4] as String?,
       name: fields[5] as String,
       phone: fields[6] as String,
       email: fields[7] as String,
-      additionalInfo: fields[4] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, Contact obj) {
     writer
-      ..writeByte(8)  // Update to reflect total number of fields
+      ..writeByte(8)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)

@@ -7,11 +7,12 @@ import 'models/contact.dart';
 import 'models/asset.dart';
 import 'services/dummy_data_service.dart';
 import 'providers/events_provider.dart';
+import 'providers/assets_provider.dart';  // Add this import
 import 'screens/event_list_screen.dart';
 import 'providers/contacts_provider.dart';
 import 'adapters/duration_adapter.dart';
 import 'providers/acts_provider.dart'; // Import ActsProvider
-import 'screens/timeline_screen.dart'; // Import TimelineScreen
+// Import TimelineScreen
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -45,20 +46,27 @@ void main() async {
   // Seed dummy data
   await DummyDataService.seedData();
 
+  // Create providers
+  final eventsProvider = EventsProvider();
+  final contactsProvider = ContactsProvider();
+  final actsProvider = ActsProvider();
+  final assetsProvider = AssetsProvider();
+
+  // Load initial data
+  await eventsProvider.loadEvents();
+  await contactsProvider.loadContacts();
+  await actsProvider.loadActs();
+  await assetsProvider.loadAssets();
+
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(
-          create: (_) => EventsProvider()..loadEvents(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => ContactsProvider()..loadContacts(),
-        ),
-        ChangeNotifierProvider( // Add ActsProvider
-          create: (_) => ActsProvider()..loadActs(),
-        ),
+        ChangeNotifierProvider.value(value: eventsProvider),
+        ChangeNotifierProvider.value(value: contactsProvider),
+        ChangeNotifierProvider.value(value: actsProvider),
+        ChangeNotifierProvider.value(value: assetsProvider),
       ],
-      child: MyApp(),
+      child: const MyApp(),
     ),
   );
 }
@@ -72,7 +80,18 @@ class MyApp extends StatelessWidget {
       title: 'Act Planner App',
       theme: ThemeData(
         primarySwatch: Colors.blue,
+        useMaterial3: true,
+        fontFamily: 'Roboto',  // Use system font
+        textTheme: Typography.material2021().black,
       ),
+      builder: (context, child) {
+        return MediaQuery(
+          data: MediaQuery.of(context).copyWith(
+            textScaler: const TextScaler.linear(1.0),
+          ),
+          child: child!,
+        );
+      },
       home: EventListScreen(),
     );
   }

@@ -33,6 +33,7 @@ class AssetsProvider with ChangeNotifier {
     try {
       return _assets.firstWhere((asset) => asset.id == id);
     } catch (e) {
+      debugPrint('Error getting asset: $e');
       return null;
     }
   }

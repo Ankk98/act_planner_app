@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/acts_provider.dart';
 import 'act_form_screen.dart';
+import 'act_details_screen.dart';
 
 class ActListScreen extends StatefulWidget {
   final String eventId;
@@ -16,9 +17,11 @@ class _ActListScreenState extends State<ActListScreen> {
   @override
   void initState() {
     super.initState();
-    // Access the ActsProvider and set the current event in initState
-    final actsProvider = Provider.of<ActsProvider>(context, listen: false);
-    actsProvider.setCurrentEvent(widget.eventId);
+    // Use addPostFrameCallback to safely update the provider after the build
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<ActsProvider>(context, listen: false)
+          .setCurrentEvent(widget.eventId);
+    });
   }
 
   @override
@@ -53,6 +56,13 @@ class _ActListScreenState extends State<ActListScreen> {
                 return ListTile(
                   title: Text(act.name),
                   subtitle: Text(act.description),
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => ActDetailsScreen(act: act),
+                      ),
+                    );
+                  },
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [

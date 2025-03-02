@@ -8,7 +8,7 @@ part of 'asset.dart';
 
 class AssetAdapter extends TypeAdapter<Asset> {
   @override
-  final int typeId = 4;
+  final int typeId = 5;
 
   @override
   Asset read(BinaryReader reader) {
@@ -19,29 +19,32 @@ class AssetAdapter extends TypeAdapter<Asset> {
     return Asset(
       id: fields[0] as String,
       name: fields[1] as String,
-      path: fields[2] as String,
+      relativePath: fields[2] as String,
       type: fields[3] as AssetType,
-      description: fields[4] as String?,
-      uploadedAt: fields[5] as DateTime,
+      uploadedAt: fields[4] as DateTime,
+      eventId: fields[5] as String?,
+      actId: fields[6] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, Asset obj) {
     writer
-      ..writeByte(6)
+      ..writeByte(7)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
       ..write(obj.name)
       ..writeByte(2)
-      ..write(obj.path)
+      ..write(obj.relativePath)
       ..writeByte(3)
       ..write(obj.type)
       ..writeByte(4)
-      ..write(obj.description)
+      ..write(obj.uploadedAt)
       ..writeByte(5)
-      ..write(obj.uploadedAt);
+      ..write(obj.eventId)
+      ..writeByte(6)
+      ..write(obj.actId);
   }
 
   @override
@@ -57,7 +60,7 @@ class AssetAdapter extends TypeAdapter<Asset> {
 
 class AssetTypeAdapter extends TypeAdapter<AssetType> {
   @override
-  final int typeId = 10;
+  final int typeId = 4;
 
   @override
   AssetType read(BinaryReader reader) {
@@ -70,6 +73,8 @@ class AssetTypeAdapter extends TypeAdapter<AssetType> {
         return AssetType.Video;
       case 3:
         return AssetType.Document;
+      case 4:
+        return AssetType.Other;
       default:
         return AssetType.Audio;
     }
@@ -89,6 +94,9 @@ class AssetTypeAdapter extends TypeAdapter<AssetType> {
         break;
       case AssetType.Document:
         writer.writeByte(3);
+        break;
+      case AssetType.Other:
+        writer.writeByte(4);
         break;
     }
   }

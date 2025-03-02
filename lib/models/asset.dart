@@ -1,4 +1,6 @@
 import 'package:hive/hive.dart';
+import 'dart:io';
+import 'package:path/path.dart' as path;
 
 part 'asset.g.dart';
 
@@ -11,7 +13,9 @@ enum AssetType {
   @HiveField(2)
   Video,
   @HiveField(3)
-  Document
+  Document,
+  @HiveField(4)
+  Other
 }
 
 @HiveType(typeId: 5)
@@ -23,23 +27,54 @@ class Asset {
   final String name;
   
   @HiveField(2)
-  final String path;
+  final String relativePath; // Path relative to app's assets directory
   
   @HiveField(3)
   final AssetType type;
   
   @HiveField(4)
-  final String? description;
-  
-  @HiveField(5)
   final DateTime uploadedAt;
+
+  @HiveField(5)
+  final String? eventId;
+
+  @HiveField(6)
+  final String? actId;
 
   Asset({
     required this.id,
     required this.name,
-    required this.path,
+    required this.relativePath,
     required this.type,
-    this.description,
     required this.uploadedAt,
+    this.eventId,
+    this.actId,
   });
+
+  static AssetType getTypeFromExtension(String fileName) {
+    final ext = path.extension(fileName).toLowerCase();
+    
+    switch (ext) {
+      case '.mp3':
+      case '.wav':
+      case '.m4a':
+        return AssetType.Audio;
+      case '.jpg':
+      case '.jpeg':
+      case '.png':
+      case '.gif':
+        return AssetType.Image;
+      case '.mp4':
+      case '.mov':
+      case '.avi':
+        return AssetType.Video;
+      case '.pdf':
+      case '.doc':
+      case '.docx':
+      case '.txt':
+        return AssetType.Document;
+      default:
+        return AssetType.Other;
+    }
+  }
 }

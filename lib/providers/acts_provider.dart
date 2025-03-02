@@ -1,21 +1,20 @@
 import 'package:flutter/foundation.dart';
 import 'package:hive/hive.dart';
 import '../models/act.dart';
+import '../models/asset.dart';
+// Add this import
 
 class ActsProvider with ChangeNotifier {
   List<Act> _acts = [];
-  String _currentEventId = '';
+  String? _currentEventId;
 
-  List<Act> get acts {
-    return _acts
-        .where((act) => act.eventId == _currentEventId)
-        .toList()
-      ..sort((a, b) => a.sequenceId.compareTo(b.sequenceId));
-  }
+  List<Act> get acts => _currentEventId != null 
+    ? _acts.where((act) => act.eventId == _currentEventId).toList()
+    : _acts;
 
-  void setCurrentEvent(String eventId) {
+  void setCurrentEvent(String? eventId) {
     _currentEventId = eventId;
-    loadActs(); // Ensure acts are loaded when the current event is set
+    notifyListeners();
   }
 
   Future<void> loadActs() async {
@@ -85,5 +84,51 @@ class ActsProvider with ChangeNotifier {
     }
 
     await loadActs();  // Reload the acts to reflect changes
+  }
+
+  List<Asset> getAssetsForAct(String actId) {
+    final act = _acts.firstWhere((act) => act.id == actId);
+    return act.assets;
+  }
+
+  Future<void> addAssetToAct(String actId, Asset asset) async {
+    final act = _acts.firstWhere((act) => act.id == actId);
+    if (act.assets.any((a) => a.id == asset.id)) {
+      return; // Asset already exists in act
+    }
+    
+    final updatedAct = Act(
+      id: act.id,
+      eventId: act.eventId,
+      name: act.name,
+      description: act.description,
+      startTime: act.startTime,
+      duration: act.duration,
+      sequenceId: act.sequenceId,
+      isApproved: act.isApproved,
+      participantIds: act.participantIds,
+      assets: [...act.assets, asset],
+      createdBy: act.createdBy,
+    );
+    await updateAct(updatedAct);
+    notifyListeners();
+  }
+
+  Future<void> removeAssetFromAct(String actId, Asset asset) async {
+    final act = _acts.firstWhere((act) => act.id == actId);
+    final updatedAct = Act(
+      id: act.id,
+      eventId: act.eventId,
+      name: act.name,
+      description: act.description,
+      startTime: act.startTime,
+      duration: act.duration,
+      sequenceId: act.sequenceId,
+      isApproved: act.isApproved,
+      participantIds: act.participantIds,
+      assets: act.assets.where((a) => a.id != asset.id).toList(),
+      createdBy: act.createdBy,
+    );
+    await updateAct(updatedAct);
   }
 }
