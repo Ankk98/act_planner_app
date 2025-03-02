@@ -1,19 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
+import 'package:http/http.dart' as http;
 import 'models/event.dart'; // Import your models
 import 'models/act.dart';
 import 'models/contact.dart';
 import 'models/asset.dart';
 import 'services/dummy_data_service.dart';
+import 'services/service_locator.dart';
 import 'providers/events_provider.dart';
-import 'providers/assets_provider.dart';  // Add this import
+import 'providers/assets_provider.dart';
 import 'screens/event_list_screen.dart';
 import 'providers/contacts_provider.dart';
 import 'adapters/duration_adapter.dart';
-import 'providers/acts_provider.dart'; // Import ActsProvider
+import 'providers/acts_provider.dart';
 import 'providers/filter_provider.dart';
-// Import TimelineScreen
+import 'providers/auth_provider.dart';
+import 'screens/login_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -46,8 +49,12 @@ void main() async {
 
   // Seed dummy data
   await DummyDataService.seedData();
+  
+  // Initialize ServiceLocator
+  await ServiceLocator().initialize(useMock: true);
 
   // Create providers
+  final authProvider = AuthProvider();
   final eventsProvider = EventsProvider();
   final contactsProvider = ContactsProvider();
   final actsProvider = ActsProvider();
@@ -63,6 +70,7 @@ void main() async {
   runApp(
     MultiProvider(
       providers: [
+        ChangeNotifierProvider.value(value: authProvider),
         ChangeNotifierProvider.value(value: eventsProvider),
         ChangeNotifierProvider.value(value: contactsProvider),
         ChangeNotifierProvider.value(value: actsProvider),
@@ -95,7 +103,7 @@ class MyApp extends StatelessWidget {
           child: child!,
         );
       },
-      home: EventListScreen(),
+      home: LoginScreen(),
     );
   }
 }

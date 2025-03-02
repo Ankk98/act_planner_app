@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../models/asset.dart';
 import '../models/act.dart';
 
 class ActForm extends StatefulWidget {

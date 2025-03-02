@@ -1,5 +1,4 @@
 import 'package:hive/hive.dart';
-import 'package:uuid/uuid.dart';
 import '../models/event.dart';
 import '../models/act.dart';
 import '../models/contact.dart';
@@ -173,5 +172,18 @@ class DummyDataService {
 
       await settings.put('isFirstRun', false);
     }
+  }
+  
+  // Methods to get dummy data for the mock API service
+  static List<Event> getEvents() {
+    return events;
+  }
+  
+  static List<Act> getActs() {
+    return acts;
+  }
+  
+  static List<Contact> getContacts() {
+    return contacts;
   }
 }

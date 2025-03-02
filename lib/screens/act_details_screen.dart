@@ -123,7 +123,7 @@ class ActDetailsScreen extends StatelessWidget {
                           leading: Icon(_getAssetIcon(asset.type)),
                           title: Text(asset.name),
                           subtitle: Text(asset.type.toString().split('.').last),
-                        )).toList(),
+                        )),
                     ],
                   ),
                 ),
