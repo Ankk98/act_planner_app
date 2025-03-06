@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
-import 'package:http/http.dart' as http;
 import 'models/event.dart'; // Import your models
 import 'models/act.dart';
 import 'models/contact.dart';
@@ -10,7 +9,6 @@ import 'services/dummy_data_service.dart';
 import 'services/service_locator.dart';
 import 'providers/events_provider.dart';
 import 'providers/assets_provider.dart';
-import 'screens/event_list_screen.dart';
 import 'providers/contacts_provider.dart';
 import 'adapters/duration_adapter.dart';
 import 'providers/acts_provider.dart';
@@ -20,7 +18,7 @@ import 'screens/login_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   // Initialize Hive
   await Hive.initFlutter();
 
@@ -49,9 +47,9 @@ void main() async {
 
   // Seed dummy data
   await DummyDataService.seedData();
-  
+
   // Initialize ServiceLocator
-  await ServiceLocator().initialize(useMock: true);
+  await ServiceLocator().initialize(useMock: false);
 
   // Create providers
   final authProvider = AuthProvider();
@@ -92,14 +90,14 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
         useMaterial3: true,
-        fontFamily: 'Roboto',  // Use system font
+        fontFamily: 'Roboto', // Use system font
         textTheme: Typography.material2021().black,
       ),
       builder: (context, child) {
         return MediaQuery(
-          data: MediaQuery.of(context).copyWith(
-            textScaler: const TextScaler.linear(1.0),
-          ),
+          data: MediaQuery.of(
+            context,
+          ).copyWith(textScaler: const TextScaler.linear(1.0)),
           child: child!,
         );
       },
@@ -114,12 +112,8 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Act Planner'),
-      ),
-      body: Center(
-        child: Text('Welcome to the Act Planner App!'),
-      ),
+      appBar: AppBar(title: Text('Act Planner')),
+      body: Center(child: Text('Welcome to the Act Planner App!')),
     );
   }
 }

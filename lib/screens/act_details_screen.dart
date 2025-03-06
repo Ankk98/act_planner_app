@@ -3,22 +3,17 @@ import 'package:provider/provider.dart';
 import '../models/act.dart';
 import '../models/asset.dart';
 import '../providers/acts_provider.dart';
-import '../providers/assets_provider.dart';
-import '../services/asset_service.dart';
 import 'act_form_screen.dart';
 
 class ActDetailsScreen extends StatelessWidget {
   final Act act;
 
-  const ActDetailsScreen({
-    super.key,
-    required this.act,
-  });
+  const ActDetailsScreen({super.key, required this.act});
 
   String _formatDuration(Duration duration) {
     final hours = duration.inHours;
     final minutes = duration.inMinutes.remainder(60);
-    
+
     if (hours > 0) {
       return '$hours hr ${minutes > 0 ? '$minutes min' : ''}';
     }
@@ -36,10 +31,9 @@ class ActDetailsScreen extends StatelessWidget {
             onPressed: () {
               Navigator.of(context).push(
                 MaterialPageRoute(
-                  builder: (context) => ActFormScreen(
-                    eventId: act.eventId,
-                    act: act,
-                  ),
+                  builder:
+                      (context) =>
+                          ActFormScreen(eventId: act.eventId, act: act),
                 ),
               );
             },
@@ -49,8 +43,10 @@ class ActDetailsScreen extends StatelessWidget {
       body: Consumer<ActsProvider>(
         builder: (context, actsProvider, child) {
           // Get the latest version of the act
-          final currentAct = actsProvider.acts.firstWhere((a) => a.id == act.id);
-          
+          final currentAct = actsProvider.acts.firstWhere(
+            (a) => a.id == act.id,
+          );
+
           return ListView(
             padding: const EdgeInsets.all(16.0),
             children: [
@@ -87,11 +83,15 @@ class ActDetailsScreen extends StatelessWidget {
                       const SizedBox(height: 8),
                       ListTile(
                         leading: const Icon(Icons.access_time),
-                        title: Text('Start Time: ${currentAct.startTime.hour}:${currentAct.startTime.minute.toString().padLeft(2, '0')}'),
+                        title: Text(
+                          'Start Time: ${currentAct.startTime.hour}:${currentAct.startTime.minute.toString().padLeft(2, '0')}',
+                        ),
                       ),
                       ListTile(
                         leading: const Icon(Icons.timelapse),
-                        title: Text('Duration: ${_formatDuration(currentAct.duration)}'),
+                        title: Text(
+                          'Duration: ${_formatDuration(currentAct.duration)}',
+                        ),
                       ),
                       ListTile(
                         leading: const Icon(Icons.format_list_numbered),
@@ -119,11 +119,15 @@ class ActDetailsScreen extends StatelessWidget {
                           child: Text('No assets added yet'),
                         )
                       else
-                        ...currentAct.assets.map((asset) => ListTile(
-                          leading: Icon(_getAssetIcon(asset.type)),
-                          title: Text(asset.name),
-                          subtitle: Text(asset.type.toString().split('.').last),
-                        )),
+                        ...currentAct.assets.map(
+                          (asset) => ListTile(
+                            leading: Icon(_getAssetIcon(asset.type)),
+                            title: Text(asset.name),
+                            subtitle: Text(
+                              asset.type.toString().split('.').last,
+                            ),
+                          ),
+                        ),
                     ],
                   ),
                 ),
@@ -149,4 +153,4 @@ class ActDetailsScreen extends StatelessWidget {
         return Icons.attachment;
     }
   }
-} 
+}

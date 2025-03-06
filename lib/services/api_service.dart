@@ -6,13 +6,13 @@ import '../models/act.dart';
 import '../models/contact.dart';
 
 class ApiService {
-  static const String baseUrl = 'https://api.actplanner.com/v1';
+  static const String baseUrl = 'http://127.0.0.1:8080/api/v1';
   String? _token;
   String? _userId;
 
   // Getter for checking if user is authenticated
   bool get isAuthenticated => _token != null;
-  
+
   // Getter for user ID
   String? get userId => _userId;
 
@@ -27,15 +27,17 @@ class ApiService {
   // Authentication methods
   Future<bool> register(String name, String email, String password) async {
     try {
+      final url = Uri.parse('$baseUrl/auth/register');
+      debugPrint('Sending registration request to: ${url.toString()}');
+
       final response = await http.post(
-        Uri.parse('$baseUrl/auth/register'),
+        url,
         headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
-          'name': name,
-          'email': email,
-          'password': password,
-        }),
+        body: jsonEncode({'name': name, 'email': email, 'password': password}),
       );
+
+      debugPrint('Registration response status: ${response.statusCode}');
+      debugPrint('Registration response body: ${response.body}');
 
       if (response.statusCode == 201) {
         return true;
@@ -51,14 +53,17 @@ class ApiService {
 
   Future<bool> login(String email, String password) async {
     try {
+      final url = Uri.parse('$baseUrl/auth/login');
+      debugPrint('Sending login request to: ${url.toString()}');
+
       final response = await http.post(
-        Uri.parse('$baseUrl/auth/login'),
+        url,
         headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
-          'email': email,
-          'password': password,
-        }),
+        body: jsonEncode({'email': email, 'password': password}),
       );
+
+      debugPrint('Login response status: ${response.statusCode}');
+      debugPrint('Login response body: ${response.body}');
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -79,10 +84,7 @@ class ApiService {
     if (_token == null) return;
 
     try {
-      await http.post(
-        Uri.parse('$baseUrl/auth/logout'),
-        headers: _headers,
-      );
+      await http.post(Uri.parse('$baseUrl/auth/logout'), headers: _headers);
     } catch (e) {
       debugPrint('Logout error: $e');
     } finally {
@@ -110,7 +112,9 @@ class ApiService {
         if (toDate != null) 'toDate': toDate.toIso8601String(),
       };
 
-      final uri = Uri.parse('$baseUrl/events').replace(queryParameters: queryParams);
+      final uri = Uri.parse(
+        '$baseUrl/events',
+      ).replace(queryParameters: queryParams);
       final response = await http.get(uri, headers: _headers);
 
       if (response.statusCode == 200) {
@@ -220,7 +224,8 @@ class ApiService {
   }
 
   // Act methods
-  Future<List<Act>> getActs(String eventId, {
+  Future<List<Act>> getActs(
+    String eventId, {
     String? search,
     bool? approved,
     int page = 1,
@@ -234,7 +239,9 @@ class ApiService {
         if (approved != null) 'approved': approved.toString(),
       };
 
-      final uri = Uri.parse('$baseUrl/events/$eventId/acts').replace(queryParameters: queryParams);
+      final uri = Uri.parse(
+        '$baseUrl/events/$eventId/acts',
+      ).replace(queryParameters: queryParams);
       final response = await http.get(uri, headers: _headers);
 
       if (response.statusCode == 200) {
@@ -345,14 +352,15 @@ class ApiService {
     }
   }
 
-  Future<bool> reorderActs(String eventId, List<Map<String, dynamic>> actOrders) async {
+  Future<bool> reorderActs(
+    String eventId,
+    List<Map<String, dynamic>> actOrders,
+  ) async {
     try {
       final response = await http.put(
         Uri.parse('$baseUrl/events/$eventId/acts/reorder'),
         headers: _headers,
-        body: jsonEncode({
-          'actOrders': actOrders,
-        }),
+        body: jsonEncode({'actOrders': actOrders}),
       );
 
       if (response.statusCode == 200) {
@@ -368,7 +376,8 @@ class ApiService {
   }
 
   // Contact methods
-  Future<List<Contact>> getContacts(String eventId, {
+  Future<List<Contact>> getContacts(
+    String eventId, {
     String? search,
     Role? role,
     int page = 1,
@@ -382,7 +391,9 @@ class ApiService {
         if (role != null) 'role': role.toString().split('.').last,
       };
 
-      final uri = Uri.parse('$baseUrl/events/$eventId/contacts').replace(queryParameters: queryParams);
+      final uri = Uri.parse(
+        '$baseUrl/events/$eventId/contacts',
+      ).replace(queryParameters: queryParams);
       final response = await http.get(uri, headers: _headers);
 
       if (response.statusCode == 200) {
@@ -499,12 +510,11 @@ class ApiService {
       date: DateTime.parse(json['date']),
       venue: json['venue'],
       startTime: DateTime.parse(json['startTime']),
-      actIds: json['actIds'] != null 
-          ? List<String>.from(json['actIds']) 
-          : [],
-      contactIds: json['contactIds'] != null 
-          ? List<String>.from(json['contactIds']) 
-          : [],
+      actIds: json['actIds'] != null ? List<String>.from(json['actIds']) : [],
+      contactIds:
+          json['contactIds'] != null
+              ? List<String>.from(json['contactIds'])
+              : [],
       type: _parseEventType(json['type']),
     );
   }
@@ -519,9 +529,10 @@ class ApiService {
       duration: Duration(seconds: json['duration']),
       sequenceId: json['sequenceId'],
       isApproved: json['isApproved'],
-      participantIds: json['participantIds'] != null 
-          ? List<String>.from(json['participantIds']) 
-          : [],
+      participantIds:
+          json['participantIds'] != null
+              ? List<String>.from(json['participantIds'])
+              : [],
       assets: [], // Assets are not included in this implementation
       createdBy: json['createdBy'] ?? '',
     );
@@ -573,7 +584,9 @@ class ApiService {
       final errorData = jsonDecode(response.body);
       debugPrint('API Error: ${errorData['message']}');
     } catch (e) {
-      debugPrint('API Error: ${response.statusCode} - ${response.reasonPhrase}');
+      debugPrint(
+        'API Error: ${response.statusCode} - ${response.reasonPhrase}',
+      );
     }
   }
-} 
+}
