@@ -44,7 +44,7 @@ class _EventFormScreenState extends State<EventFormScreen> {
   Future<void> _save() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
-      
+
       final startTime = DateTime(
         _date.year,
         _date.month,
@@ -90,23 +90,28 @@ class _EventFormScreenState extends State<EventFormScreen> {
             TextFormField(
               initialValue: _name,
               decoration: InputDecoration(labelText: 'Event Name'),
-              validator: (value) =>
-                  value?.isEmpty ?? true ? 'Please enter a name' : null,
+              validator:
+                  (value) =>
+                      value?.isEmpty ?? true ? 'Please enter a name' : null,
               onSaved: (value) => _name = value!,
             ),
             TextFormField(
               initialValue: _description,
               decoration: InputDecoration(labelText: 'Description'),
               maxLines: 3,
-              validator: (value) =>
-                  value?.isEmpty ?? true ? 'Please enter a description' : null,
+              validator:
+                  (value) =>
+                      value?.isEmpty ?? true
+                          ? 'Please enter a description'
+                          : null,
               onSaved: (value) => _description = value!,
             ),
             TextFormField(
               initialValue: _venue,
               decoration: InputDecoration(labelText: 'Venue'),
-              validator: (value) =>
-                  value?.isEmpty ?? true ? 'Please enter a venue' : null,
+              validator:
+                  (value) =>
+                      value?.isEmpty ?? true ? 'Please enter a venue' : null,
               onSaved: (value) => _venue = value!,
             ),
             ListTile(
@@ -138,17 +143,19 @@ class _EventFormScreenState extends State<EventFormScreen> {
             DropdownButtonFormField<EventType>(
               value: _type,
               decoration: InputDecoration(labelText: 'Event Type'),
-              items: EventType.values.map((type) => DropdownMenuItem(
-                value: type,
-                child: Text(type.toString().split('.').last),
-              )).toList(),
+              items:
+                  EventType.values
+                      .map(
+                        (type) => DropdownMenuItem(
+                          value: type,
+                          child: Text(type.toString().split('.').last),
+                        ),
+                      )
+                      .toList(),
               onChanged: (value) => setState(() => _type = value!),
             ),
             SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: _save,
-              child: Text('Save Event'),
-            ),
+            ElevatedButton(onPressed: _save, child: Text('Save Event')),
           ],
         ),
       ),

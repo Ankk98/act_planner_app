@@ -158,9 +158,9 @@ class ApiService {
         body: jsonEncode({
           'name': event.name,
           'description': event.description,
-          'date': event.date.toIso8601String(),
+          'date': event.date.toUtc().toIso8601String(),
           'venue': event.venue,
-          'startTime': event.startTime.toIso8601String(),
+          'startTime': event.startTime.toUtc().toIso8601String(),
           'type': event.type.toString().split('.').last,
         }),
       );
@@ -185,9 +185,9 @@ class ApiService {
         body: jsonEncode({
           'name': event.name,
           'description': event.description,
-          'date': event.date.toIso8601String(),
+          'date': event.date.toUtc().toIso8601String(),
           'venue': event.venue,
-          'startTime': event.startTime.toIso8601String(),
+          'startTime': event.startTime.toUtc().toIso8601String(),
           'type': event.type.toString().split('.').last,
         }),
       );
@@ -285,7 +285,7 @@ class ApiService {
         body: jsonEncode({
           'name': act.name,
           'description': act.description,
-          'startTime': act.startTime.toIso8601String(),
+          'startTime': act.startTime.toUtc().toIso8601String(),
           'duration': act.duration.inSeconds,
           'sequenceId': act.sequenceId,
           'isApproved': act.isApproved,
@@ -313,7 +313,7 @@ class ApiService {
         body: jsonEncode({
           'name': act.name,
           'description': act.description,
-          'startTime': act.startTime.toIso8601String(),
+          'startTime': act.startTime.toUtc().toIso8601String(),
           'duration': act.duration.inSeconds,
           'sequenceId': act.sequenceId,
           'isApproved': act.isApproved,
