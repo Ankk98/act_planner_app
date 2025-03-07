@@ -15,6 +15,7 @@ import 'providers/acts_provider.dart';
 import 'providers/filter_provider.dart';
 import 'providers/auth_provider.dart';
 import 'screens/login_screen.dart';
+import 'screens/landing_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -101,7 +102,7 @@ class MyApp extends StatelessWidget {
           child: child!,
         );
       },
-      home: LoginScreen(),
+      home: const LandingScreen(),
     );
   }
 }
