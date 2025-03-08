@@ -10,11 +10,7 @@ class ActFormScreen extends StatefulWidget {
   final String eventId;
   final Act? act;
 
-  const ActFormScreen({
-    super.key,
-    required this.eventId,
-    this.act,
-  });
+  const ActFormScreen({super.key, required this.eventId, this.act});
 
   @override
   State<ActFormScreen> createState() => _ActFormScreenState();
@@ -32,7 +28,9 @@ class _ActFormScreenState extends State<ActFormScreen> {
   void initState() {
     super.initState();
     _nameController = TextEditingController(text: widget.act?.name ?? '');
-    _descriptionController = TextEditingController(text: widget.act?.description ?? '');
+    _descriptionController = TextEditingController(
+      text: widget.act?.description ?? '',
+    );
     _durationController = TextEditingController(
       text: widget.act?.duration.inMinutes.toString() ?? '30',
     );
@@ -103,10 +101,7 @@ class _ActFormScreenState extends State<ActFormScreen> {
       appBar: AppBar(
         title: Text(widget.act == null ? 'Add Act' : 'Edit Act'),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.save),
-            onPressed: _saveAct,
-          ),
+          IconButton(icon: const Icon(Icons.save), onPressed: _saveAct),
         ],
       ),
       body: Form(
@@ -165,8 +160,6 @@ class _ActFormScreenState extends State<ActFormScreen> {
             const SizedBox(height: 16),
             Consumer<AssetsProvider>(
               builder: (context, assetsProvider, child) {
-                final allAssets = assetsProvider.assets;
-                
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -174,11 +167,18 @@ class _ActFormScreenState extends State<ActFormScreen> {
                     const SizedBox(height: 8),
                     if (widget.act != null && widget.act!.assets.isNotEmpty)
                       Column(
-                        children: widget.act!.assets.map((asset) => ListTile(
-                          leading: _getAssetIcon(asset.type),
-                          title: Text(asset.name),
-                          subtitle: Text(asset.type.toString().split('.').last),
-                        )).toList(),
+                        children:
+                            widget.act!.assets
+                                .map(
+                                  (asset) => ListTile(
+                                    leading: _getAssetIcon(asset.type),
+                                    title: Text(asset.name),
+                                    subtitle: Text(
+                                      asset.type.toString().split('.').last,
+                                    ),
+                                  ),
+                                )
+                                .toList(),
                       )
                     else
                       const Padding(
@@ -194,7 +194,7 @@ class _ActFormScreenState extends State<ActFormScreen> {
       ),
     );
   }
-  
+
   Widget _getAssetIcon(AssetType type) {
     switch (type) {
       case AssetType.Audio:
