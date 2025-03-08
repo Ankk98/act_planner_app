@@ -6,7 +6,7 @@ import '../models/act.dart';
 import '../models/contact.dart';
 
 class ApiService {
-  static const String baseUrl = 'http://127.0.0.1:8080/api/v1';
+  static const String baseUrl = 'https://hostmyai.in/api/v1';
   String? _token;
   String? _userId;
 
