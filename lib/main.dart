@@ -15,6 +15,8 @@ import 'providers/acts_provider.dart';
 import 'providers/filter_provider.dart';
 import 'providers/auth_provider.dart';
 import 'screens/landing_screen.dart';
+import 'screens/profile_screen.dart';
+import 'screens/home_screen.dart'; // Import HomeScreen
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -102,18 +104,10 @@ class MyApp extends StatelessWidget {
         );
       },
       home: const LandingScreen(),
-    );
-  }
-}
-
-class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text('Act Planner')),
-      body: Center(child: Text('Welcome to the Act Planner App!')),
+      routes: {
+        '/profile': (context) => const ProfileScreen(),
+        '/home': (context) => const HomeScreen(),
+      },
     );
   }
 }
