@@ -142,13 +142,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   },
                   child: const Text('Don\'t have an account? Register'),
                 ),
-                const SizedBox(height: 16),
-                OutlinedButton(
-                  onPressed: () {
-                    Navigator.of(context).pushReplacementNamed('/home');
-                  },
-                  child: const Text('Continue without login'),
-                ),
               ],
             ),
           ),

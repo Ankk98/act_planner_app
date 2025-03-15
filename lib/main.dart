@@ -5,7 +5,6 @@ import 'models/event.dart'; // Import your models
 import 'models/act.dart';
 import 'models/contact.dart';
 import 'models/asset.dart';
-import 'services/dummy_data_service.dart';
 import 'services/service_locator.dart';
 import 'providers/events_provider.dart';
 import 'providers/assets_provider.dart';
@@ -34,24 +33,14 @@ void main() async {
   Hive.registerAdapter(RoleAdapter());
   Hive.registerAdapter(AssetTypeAdapter());
 
-  // Delete existing boxes to ensure clean state
-  await Hive.deleteBoxFromDisk('events');
-  await Hive.deleteBoxFromDisk('acts');
-  await Hive.deleteBoxFromDisk('contacts');
-  await Hive.deleteBoxFromDisk('assets');
-  await Hive.deleteBoxFromDisk('settings');
-
   // Open Hive boxes
   await Hive.openBox<Event>('events');
   await Hive.openBox<Act>('acts');
   await Hive.openBox<Contact>('contacts');
   await Hive.openBox<Asset>('assets');
 
-  // Seed dummy data
-  await DummyDataService.seedData();
-
   // Initialize ServiceLocator
-  await ServiceLocator().initialize(useMock: false);
+  await ServiceLocator().initialize();
 
   // Create providers
   final authProvider = AuthProvider();
@@ -60,12 +49,6 @@ void main() async {
   final actsProvider = ActsProvider();
   final assetsProvider = AssetsProvider();
   final filterProvider = FilterProvider();
-
-  // Load initial data
-  await eventsProvider.loadEvents();
-  await contactsProvider.loadContacts();
-  await actsProvider.loadActs();
-  await assetsProvider.loadAssets();
 
   runApp(
     MultiProvider(
